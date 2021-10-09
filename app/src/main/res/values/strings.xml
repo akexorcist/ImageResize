@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">ImageResize</string>
+    <string name="start">Start</string>
+    <string name="try_again">Try Again</string>
+    <string name="image_resize_instruction">Press button to start\nimage resize benchmark</string>
+    <string name="result_label">Result</string>
+    <string name="millisecond">ms</string>
+    <string name="actual_size">%1$s x %2$s PX</string>
+    <string name="unknown">-</string>
+    <string name="ratio_square">Square</string>
+    <string name="ratio_landscape">Landscape</string>
+    <string name="ratio_portrait">Portrait</string>
+    <string name="result_title">%1$s %2$s PX</string>
+    <string name="image_resize_count">%1$d / %2$d</string>
+</resources>
