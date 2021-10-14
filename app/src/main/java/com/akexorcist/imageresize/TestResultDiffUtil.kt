@@ -10,7 +10,9 @@ class TestResultDiffUtil(
         return oldItem.getOrNull(oldItemPosition)?.preferredSize ==
                 newItem.getOrNull(newItemPosition)?.preferredSize &&
                 oldItem.getOrNull(oldItemPosition)?.ratio ==
-                newItem.getOrNull(newItemPosition)?.ratio
+                newItem.getOrNull(newItemPosition)?.ratio &&
+                oldItem.getOrNull(oldItemPosition)?.resizeType ==
+                newItem.getOrNull(newItemPosition)?.resizeType
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

@@ -12,21 +12,33 @@ class TestResultViewHolder(
         get() = binding.root.context
 
     fun bind(result: TestResult) {
-        updateTitle(result.ratio, result.preferredSize)
+        updateTitle(result.ratio, result.resizeType)
+        updatePreferredSize(result.preferredSize)
         updateActualSize(result.actualWidth, result.actualHeight)
         updateExecutionTime(result.executionTime)
         updateStatus(result.status)
     }
 
-    private fun updateTitle(ratio: ImageRatio, preferredSize: Int) {
-        val type = when (ratio) {
+    private fun updateTitle(imageRatio: ImageRatio, resizeType: ResizeType) {
+        val imageRatioText = when (imageRatio) {
             ImageRatio.Landscape -> context.getString(R.string.ratio_landscape)
             ImageRatio.Portrait -> context.getString(R.string.ratio_portrait)
             ImageRatio.Square -> context.getString(R.string.ratio_square)
         }
+        val resizeTypeText = when (resizeType) {
+            ResizeType.Fill -> context.getString(R.string.resize_type_fill)
+            ResizeType.Crop -> context.getString(R.string.resize_type_crop)
+        }
         binding.textViewTitle.text = context.getString(
             R.string.result_title,
-            type,
+            imageRatioText,
+            resizeTypeText
+        )
+    }
+
+    private fun updatePreferredSize(preferredSize: Int) {
+        binding.textViewPreferredSize.text = context.getString(
+            R.string.result_preferred_size,
             numberUtils.toDisplayNumber(preferredSize)
         )
     }

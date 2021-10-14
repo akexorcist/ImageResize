@@ -17,7 +17,7 @@
         <View
             android:id="@+id/viewStatus"
             android:layout_width="20dp"
-            android:layout_height="80dp"
+            android:layout_height="120dp"
             android:background="@drawable/selector_status" />
 
         <LinearLayout
@@ -33,6 +33,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textStyle="bold"
+                tools:text="Square &amp; Fill" />
+
+            <TextView
+                android:id="@+id/textViewPreferredSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                 android:textStyle="bold"
                 tools:text="200 PX" />
 

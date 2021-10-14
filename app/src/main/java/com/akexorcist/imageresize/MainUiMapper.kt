@@ -21,7 +21,8 @@ class MainUiMapper {
         uiModel: MainUiModel?,
         preferredSize: Int,
         total: Int,
-        ratio: ImageRatio
+        ratio: ImageRatio,
+        resizeType: ResizeType
     ): MainUiModel {
         val results = uiModel?.results ?: listOf()
         val addedResults = results.toMutableList().apply {
@@ -32,7 +33,8 @@ class MainUiMapper {
                     actualHeight = -1,
                     executionTime = -1,
                     status = ResizeStatus.Running,
-                    ratio = ratio
+                    ratio = ratio,
+                    resizeType = resizeType
                 )
             )
         }
@@ -51,22 +53,33 @@ class MainUiMapper {
         actualHeight: Int,
         executionTime: Long,
         ratio: ImageRatio,
-        total: Int
+        resizeType: ResizeType,
+        total: Int,
+        skipLargerResize: Boolean
     ): MainUiModel {
         val results = uiModel?.results ?: listOf()
         val maxActualSize = actualWidth.coerceAtLeast(actualHeight)
-        val expectSize = originalSize.coerceAtMost(preferredSize)
-        val state =
-            if (maxActualSize == expectSize) ResizeStatus.Pass
-            else ResizeStatus.Failed
+        val minActualSize = actualWidth.coerceAtMost(actualHeight)
+        val expectSize =
+            if(skipLargerResize) originalSize.coerceAtMost(preferredSize)
+            else preferredSize
+        val state = when {
+            resizeType == ResizeType.Fill && maxActualSize == expectSize -> ResizeStatus.Pass
+            resizeType == ResizeType.Crop && minActualSize == expectSize -> ResizeStatus.Pass
+            else -> ResizeStatus.Failed
+        }
         val updatedResults = results.map {
-            if (preferredSize == it.preferredSize && ratio == it.ratio) TestResult(
+            if (preferredSize == it.preferredSize &&
+                ratio == it.ratio &&
+                resizeType == it.resizeType
+            ) TestResult(
                 preferredSize = preferredSize,
                 actualWidth = actualWidth,
                 actualHeight = actualHeight,
                 executionTime = executionTime,
                 status = state,
-                ratio = ratio
+                ratio = ratio,
+                resizeType = resizeType
             )
             else it
         }

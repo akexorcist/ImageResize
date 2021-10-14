@@ -10,5 +10,6 @@ data class TestResult(
     val actualHeight: Int,
     val executionTime: Long,
     val status: ResizeStatus,
-    val ratio: ImageRatio
+    val ratio: ImageRatio,
+    val resizeType: ResizeType
 ) : Parcelable
