@@ -1,6 +1,7 @@
-package com.akexorcist.imageresize
+package com.akexorcist.imageresize.ui.adapter
 
 import androidx.recyclerview.widget.DiffUtil
+import com.akexorcist.imageresize.vo.TestResult
 
 class TestResultDiffUtil(
     private val oldItem: List<TestResult>,

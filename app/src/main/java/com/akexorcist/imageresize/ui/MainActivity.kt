@@ -1,4 +1,4 @@
-package com.akexorcist.imageresize
+package com.akexorcist.imageresize.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,7 +6,13 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.akexorcist.imageresize.*
 import com.akexorcist.imageresize.databinding.ActivityMainBinding
+import com.akexorcist.imageresize.ui.adapter.TestResultAdapter
+import com.akexorcist.imageresize.ui.adapter.TestResultDiffUtil
+import com.akexorcist.imageresize.vo.MainEvent
+import com.akexorcist.imageresize.vo.MainUiModel
+import com.akexorcist.imageresize.vo.TestResult
 
 class MainActivity : AppCompatActivity() {
 

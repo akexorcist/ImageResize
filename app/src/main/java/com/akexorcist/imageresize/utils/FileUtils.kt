@@ -1,4 +1,4 @@
-package com.akexorcist.imageresize
+package com.akexorcist.imageresize.utils
 
 import java.io.*
 import java.lang.Exception

@@ -1,4 +1,4 @@
-package com.akexorcist.imageresize
+package com.akexorcist.imageresize.vo
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

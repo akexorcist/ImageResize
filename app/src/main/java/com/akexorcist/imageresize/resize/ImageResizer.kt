@@ -1,4 +1,4 @@
-package com.akexorcist.imageresize
+package com.akexorcist.imageresize.resize
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

@@ -1,9 +1,10 @@
-package com.akexorcist.imageresize
+package com.akexorcist.imageresize.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.akexorcist.imageresize.databinding.LayoutTestResultBinding
+import com.akexorcist.imageresize.vo.TestResult
 
 class TestResultAdapter : RecyclerView.Adapter<TestResultViewHolder>() {
     private var results: List<TestResult> = listOf()

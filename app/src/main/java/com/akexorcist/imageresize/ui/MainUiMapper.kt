@@ -1,4 +1,8 @@
-package com.akexorcist.imageresize
+package com.akexorcist.imageresize.ui
+
+import com.akexorcist.imageresize.vo.ImageRatio
+import com.akexorcist.imageresize.resize.ResizeType
+import com.akexorcist.imageresize.vo.*
 
 class MainUiMapper {
     fun onIdle(): MainUiModel {

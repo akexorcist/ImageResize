@@ -1,8 +1,14 @@
-package com.akexorcist.imageresize
+package com.akexorcist.imageresize.ui.adapter
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
+import com.akexorcist.imageresize.R
 import com.akexorcist.imageresize.databinding.LayoutTestResultBinding
+import com.akexorcist.imageresize.vo.ImageRatio
+import com.akexorcist.imageresize.utils.NumberUtils
+import com.akexorcist.imageresize.vo.ResizeStatus
+import com.akexorcist.imageresize.resize.ResizeType
+import com.akexorcist.imageresize.vo.TestResult
 
 class TestResultViewHolder(
     private val binding: LayoutTestResultBinding
