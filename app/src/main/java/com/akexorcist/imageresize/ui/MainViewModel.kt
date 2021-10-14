@@ -10,6 +10,7 @@ import com.akexorcist.imageresize.utils.FileUtils
 import com.akexorcist.imageresize.vo.MainUiModel
 import com.akexorcist.imageresize.resize.ResizeType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.*
@@ -33,6 +34,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private val _uiModel = MutableLiveData<MainUiModel>()
     val uiModel: LiveData<MainUiModel> = _uiModel
 
+    private var currentJob: Job? = null
+
     fun initSampleFile() = viewModelScope.launch(Dispatchers.IO) {
         listOf(
             FILE_NAME_LANDSCAPE,
@@ -53,6 +56,16 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun startImageResize() = viewModelScope.launch(Dispatchers.IO) {
+        cancelActiveImageResize()
+        currentJob = doImageResize()
+    }
+
+    fun cancelImageResize() = viewModelScope.launch {
+        cancelActiveImageResize()
+        updateUiModel { uiMapper.onCancel(_uiModel.value) }
+    }
+
+    private fun doImageResize() = viewModelScope.launch(Dispatchers.IO) {
         val images: List<Pair<ImageRatio, File>> = listOf(
             ImageRatio.Landscape to File(context.cacheDir, FILE_NAME_LANDSCAPE),
             ImageRatio.Portrait to File(context.cacheDir, FILE_NAME_PORTRAIT),
@@ -64,8 +77,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         )
         val initialSize = listOf(
             (IMAGE_RESIZE_STEP * 1.0f).toInt() to (IMAGE_RESIZE_STEP * 1.0f).toInt(),
-            (IMAGE_RESIZE_STEP * 1.2f).toInt() to (IMAGE_RESIZE_STEP * 1.0f).toInt(),
-            (IMAGE_RESIZE_STEP * 1.0f).toInt() to (IMAGE_RESIZE_STEP * 1.2f).toInt()
+            (IMAGE_RESIZE_STEP * 1.5f).toInt() to (IMAGE_RESIZE_STEP * 1.0f).toInt(),
+            (IMAGE_RESIZE_STEP * 1.0f).toInt() to (IMAGE_RESIZE_STEP * 1.5f).toInt()
         )
         val totalImageResizeCount = IMAGE_RESIZE_COUNT * images.size * resizeTypes.size * initialSize.size
         val skipLargerResize = true
@@ -126,6 +139,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 uiModel = _uiModel.value,
                 total = totalImageResizeCount
             )
+        }
+    }
+
+    private fun cancelActiveImageResize() {
+        if (currentJob?.isActive == true) {
+            currentJob?.cancel()
         }
     }
 

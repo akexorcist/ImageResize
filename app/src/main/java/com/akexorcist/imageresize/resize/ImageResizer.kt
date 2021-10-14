@@ -1,6 +1,5 @@
 package com.akexorcist.imageresize.resize
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 
@@ -17,27 +16,19 @@ class ImageResizer {
             BitmapFactory.decodeFile(path, this)
             inSampleSize = calculateInSampleSize(this, preferredWidth, preferredHeight)
             inJustDecodeBounds = false
-            if(!skipLargerResize || preferredWidth < outWidth && preferredHeight < outHeight) {
+            if (!skipLargerResize || preferredWidth <= outWidth && preferredHeight <= outHeight) {
                 val outRatio = outWidth.toFloat() / outHeight.toFloat()
                 val reqRatio = preferredWidth.toFloat() / preferredHeight.toFloat()
-                when (resizeType) {
-                    ResizeType.Fill -> {
-                        if (outRatio > reqRatio) {
-                            inDensity = outWidth
-                            inTargetDensity = preferredWidth * inSampleSize
-                        } else if (outRatio <= reqRatio) {
-                            inDensity = outHeight
-                            inTargetDensity = preferredHeight * inSampleSize
-                        }
+                when {
+                    (resizeType == ResizeType.Fill && outRatio > reqRatio) ||
+                            (resizeType == ResizeType.Crop && outRatio <= reqRatio) -> {
+                        inDensity = outWidth
+                        inTargetDensity = preferredWidth * inSampleSize
                     }
-                    ResizeType.Crop -> {
-                        if (outRatio > reqRatio) {
-                            inDensity = outHeight
-                            inTargetDensity = preferredHeight * inSampleSize
-                        } else if (outRatio <= reqRatio) {
-                            inDensity = outWidth
-                            inTargetDensity = preferredWidth * inSampleSize
-                        }
+                    (resizeType == ResizeType.Fill && outRatio <= reqRatio) ||
+                            (resizeType == ResizeType.Crop && outRatio > reqRatio) -> {
+                        inDensity = outHeight
+                        inTargetDensity = preferredHeight * inSampleSize
                     }
                 }
             }

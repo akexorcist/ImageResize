@@ -36,16 +36,39 @@
         android:layout_height="1dp"
         android:layout_marginBottom="16dp"
         android:background="@color/divider"
-        app:layout_constraintBottom_toTopOf="@id/barrierFooter"
+        app:layout_constraintBottom_toTopOf="@id/textViewResizeProgress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewResizeProgress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        app:layout_constraintBottom_toTopOf="@id/indicatorResizeProgress"
+        app:layout_constraintEnd_toEndOf="@id/indicatorResizeProgress"
+        app:layout_constraintStart_toStartOf="@id/indicatorResizeProgress"
+        tools:text="45 / 90" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/indicatorResizeProgress"
+        android:layout_width="240dp"
+        android:layout_height="2dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/barrierFooter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:max="100"
+        tools:progress="50" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierFooter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="top"
-        app:constraint_referenced_ids="buttonStart,buttonTryAgain" />
+        app:constraint_referenced_ids="buttonStart,buttonCancel,buttonTryAgain" />
 
     <Button
         android:id="@+id/buttonStart"
@@ -53,6 +76,16 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text="@string/start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

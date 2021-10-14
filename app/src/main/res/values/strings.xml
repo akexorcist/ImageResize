@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ImageResize</string>
     <string name="start">Start</string>
+    <string name="cancel">Cancel</string>
     <string name="try_again">Try Again</string>
     <string name="image_resize_instruction">Press button to start\nimage resize benchmark</string>
     <string name="result_label">Result</string>

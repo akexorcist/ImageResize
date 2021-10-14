@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.buttonStart.setOnClickListener { viewModel.startImageResize() }
+        binding.buttonCancel.setOnClickListener { viewModel.cancelImageResize() }
         binding.buttonTryAgain.setOnClickListener { viewModel.retryImageResize() }
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
@@ -45,26 +46,41 @@ class MainActivity : AppCompatActivity() {
         when (uiModel.event) {
             MainEvent.OnIdle -> {
                 binding.buttonStart.visibility = View.VISIBLE
+                binding.buttonCancel.visibility = View.GONE
                 binding.buttonTryAgain.visibility = View.GONE
+                binding.indicatorResizeProgress.visibility = View.INVISIBLE
+                binding.textViewResizeProgress.visibility = View.INVISIBLE
+            }
+            MainEvent.OnCancel -> {
+                binding.buttonStart.visibility = View.GONE
+                binding.buttonCancel.visibility = View.GONE
+                binding.buttonTryAgain.visibility = View.VISIBLE
+                binding.indicatorResizeProgress.visibility = View.VISIBLE
+                binding.textViewResizeProgress.visibility = View.VISIBLE
             }
             MainEvent.OnImageResizeStarted -> {
-                binding.buttonStart.isEnabled = false
-                binding.buttonStart.text = getString(R.string.start)
-                binding.buttonStart.visibility = View.VISIBLE
+                binding.buttonStart.visibility = View.GONE
+                binding.buttonCancel.visibility = View.VISIBLE
                 binding.buttonTryAgain.visibility = View.GONE
+                binding.textViewInstruction.visibility = View.GONE
+                binding.indicatorResizeProgress.visibility = View.VISIBLE
+                binding.textViewResizeProgress.visibility = View.VISIBLE
             }
             MainEvent.OnImageResizeNext -> {
                 updateTestResults(uiModel.results)
-                binding.buttonStart.text = getString(
+                binding.indicatorResizeProgress.max = uiModel.totalImageResizeCount
+                binding.indicatorResizeProgress.progress = uiModel.results.size
+                binding.textViewResizeProgress.text = getString(
                     R.string.image_resize_count,
                     uiModel.results.size,
                     uiModel.totalImageResizeCount
                 )
-                binding.textViewInstruction.visibility = View.GONE
             }
             MainEvent.OnImageResizeStatusUpdated -> {
                 updateTestResults(uiModel.results)
-                binding.buttonStart.text = getString(
+                binding.indicatorResizeProgress.max = uiModel.totalImageResizeCount
+                binding.indicatorResizeProgress.progress = uiModel.results.size
+                binding.textViewResizeProgress.text = getString(
                     R.string.image_resize_count,
                     uiModel.results.size,
                     uiModel.totalImageResizeCount
@@ -73,10 +89,14 @@ class MainActivity : AppCompatActivity() {
             MainEvent.OnImageResizeCompleted -> {
                 updateTestResults(uiModel.results)
                 binding.buttonStart.visibility = View.GONE
+                binding.buttonCancel.visibility = View.GONE
                 binding.buttonTryAgain.visibility = View.VISIBLE
             }
             MainEvent.OnImageResizeRetry -> {
                 updateTestResults(uiModel.results)
+                binding.buttonStart.visibility = View.GONE
+                binding.buttonCancel.visibility = View.VISIBLE
+                binding.buttonTryAgain.visibility = View.GONE
             }
         }
     }

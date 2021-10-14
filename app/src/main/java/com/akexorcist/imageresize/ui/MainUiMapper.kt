@@ -13,6 +13,15 @@ class MainUiMapper {
         )
     }
 
+    fun onCancel(uiModel: MainUiModel?): MainUiModel {
+        val results = uiModel?.results ?: listOf()
+        return MainUiModel(
+            event = MainEvent.OnCancel,
+            results = results,
+            totalImageResizeCount = uiModel?.totalImageResizeCount ?: 0
+        )
+    }
+
     fun onImageResizeStarted(total: Int): MainUiModel {
         return MainUiModel(
             event = MainEvent.OnImageResizeStarted,
