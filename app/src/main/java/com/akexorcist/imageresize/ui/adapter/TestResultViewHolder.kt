@@ -19,7 +19,7 @@ class TestResultViewHolder(
 
     fun bind(result: TestResult) {
         updateTitle(result.ratio, result.resizeType)
-        updatePreferredSize(result.preferredSize)
+        updatePreferredSize(result.preferredWidth, result.preferredHeight)
         updateActualSize(result.actualWidth, result.actualHeight)
         updateExecutionTime(result.executionTime)
         updateStatus(result.status)
@@ -42,10 +42,11 @@ class TestResultViewHolder(
         )
     }
 
-    private fun updatePreferredSize(preferredSize: Int) {
+    private fun updatePreferredSize(preferredWidth: Int, preferredHeight: Int) {
         binding.textViewPreferredSize.text = context.getString(
             R.string.result_preferred_size,
-            numberUtils.toDisplayNumber(preferredSize)
+            numberUtils.toDisplayNumber(preferredWidth),
+            numberUtils.toDisplayNumber(preferredHeight)
         )
     }
 

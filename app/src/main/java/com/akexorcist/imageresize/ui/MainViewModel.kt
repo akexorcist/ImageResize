@@ -20,8 +20,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         private const val FILE_NAME_PORTRAIT = "sample-portrait.jpg"
         private const val FILE_NAME_LANDSCAPE = "sample-landscape.jpg"
         private const val FILE_NAME_SQUARE = "sample-square.jpg"
-        private const val IMAGE_RESIZE_COUNT = 20
-        private const val IMAGE_RESIZE_STEP = 200
+        private const val IMAGE_RESIZE_COUNT = 10
+        private const val IMAGE_RESIZE_STEP = 400
     }
 
     private val imageResizer = ImageResizer()
@@ -53,59 +53,71 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun startImageResize() = viewModelScope.launch(Dispatchers.IO) {
-        val images: List<Triple<ImageRatio, File, ResizeType>> = listOf(
-            Triple(ImageRatio.Landscape, File(context.cacheDir, FILE_NAME_LANDSCAPE), ResizeType.Fill),
-            Triple(ImageRatio.Portrait, File(context.cacheDir, FILE_NAME_PORTRAIT), ResizeType.Fill),
-            Triple(ImageRatio.Square, File(context.cacheDir, FILE_NAME_SQUARE), ResizeType.Fill),
-            Triple(ImageRatio.Landscape, File(context.cacheDir, FILE_NAME_LANDSCAPE), ResizeType.Crop),
-            Triple(ImageRatio.Portrait, File(context.cacheDir, FILE_NAME_PORTRAIT), ResizeType.Crop),
-            Triple(ImageRatio.Square, File(context.cacheDir, FILE_NAME_SQUARE), ResizeType.Crop),
+        val images: List<Pair<ImageRatio, File>> = listOf(
+            ImageRatio.Landscape to File(context.cacheDir, FILE_NAME_LANDSCAPE),
+            ImageRatio.Portrait to File(context.cacheDir, FILE_NAME_PORTRAIT),
+            ImageRatio.Square to File(context.cacheDir, FILE_NAME_SQUARE),
         )
-        val totalImageResizeCount = IMAGE_RESIZE_COUNT * images.size
-        val skipLargerResize = false
+        val resizeTypes = listOf(
+            ResizeType.Fill,
+            ResizeType.Crop
+        )
+        val initialSize = listOf(
+            (IMAGE_RESIZE_STEP * 1.0f).toInt() to (IMAGE_RESIZE_STEP * 1.0f).toInt(),
+            (IMAGE_RESIZE_STEP * 1.2f).toInt() to (IMAGE_RESIZE_STEP * 1.0f).toInt(),
+            (IMAGE_RESIZE_STEP * 1.0f).toInt() to (IMAGE_RESIZE_STEP * 1.2f).toInt()
+        )
+        val totalImageResizeCount = IMAGE_RESIZE_COUNT * images.size * resizeTypes.size * initialSize.size
+        val skipLargerResize = true
         _uiModel.postValue(uiMapper.onImageResizeStarted(totalImageResizeCount))
-        images.forEach { (ratio, file, resizeType) ->
-            val originalImageSize = when (resizeType) {
-                ResizeType.Fill -> imageResizer.getMaxImageSize(file.absolutePath)
-                ResizeType.Crop -> imageResizer.getMinImageSize(file.absolutePath)
-            }
-            (1..IMAGE_RESIZE_COUNT).forEach { index ->
-                val preferredSize = IMAGE_RESIZE_STEP * index
-                updateUiModel {
-                    uiMapper.onImageResizeNext(
-                        uiModel = _uiModel.value,
-                        preferredSize = preferredSize,
-                        ratio = ratio,
-                        total = totalImageResizeCount,
-                        resizeType = resizeType
-                    )
-                }
-                var bitmap: Bitmap?
-                val millis = measureTimeMillis {
-                    bitmap = imageResizer.resize(
-                        preferredSize = preferredSize,
-                        path = file.absolutePath,
-                        resizeType = resizeType,
-                        skipLargerResize = skipLargerResize
-                    )
-                }
-                val width = bitmap?.width ?: -1
-                val height = bitmap?.height ?: -1
+        images.forEach { (ratio, file) ->
+            resizeTypes.forEach { resizeType ->
+                initialSize.forEach { (initialWidth, initialHeight) ->
+                    val (originalImageWidth, originalImageHeight) = imageResizer.getOriginalImageSize(file.absolutePath)
+                    (1..IMAGE_RESIZE_COUNT).forEach { index ->
+                        val preferredWidth = initialWidth * index
+                        val preferredHeight = initialHeight * index
+                        updateUiModel {
+                            uiMapper.onImageResizeNext(
+                                uiModel = _uiModel.value,
+                                preferredWidth = preferredWidth,
+                                preferredHeight = preferredHeight,
+                                ratio = ratio,
+                                total = totalImageResizeCount,
+                                resizeType = resizeType
+                            )
+                        }
+                        var bitmap: Bitmap?
+                        val millis = measureTimeMillis {
+                            bitmap = imageResizer.resize(
+                                preferredWidth = preferredWidth,
+                                preferredHeight = preferredHeight,
+                                path = file.absolutePath,
+                                resizeType = resizeType,
+                                skipLargerResize = skipLargerResize
+                            )
+                        }
+                        val width = bitmap?.width ?: -1
+                        val height = bitmap?.height ?: -1
 //                bitmap?.let { saveToStorage(it, preferredSize, ratio) }
-                bitmap?.recycle()
-                updateUiModel {
-                    uiMapper.onImageResizeStatusUpdated(
-                        uiModel = _uiModel.value,
-                        originalSize = originalImageSize,
-                        preferredSize = preferredSize,
-                        actualWidth = width,
-                        actualHeight = height,
-                        executionTime = millis,
-                        ratio = ratio,
-                        resizeType = resizeType,
-                        total = totalImageResizeCount,
-                        skipLargerResize = skipLargerResize
-                    )
+                        bitmap?.recycle()
+                        updateUiModel {
+                            uiMapper.onImageResizeStatusUpdated(
+                                uiModel = _uiModel.value,
+                                originalWidth = originalImageWidth,
+                                originalHeight = originalImageHeight,
+                                preferredWidth = preferredWidth,
+                                preferredHeight = preferredHeight,
+                                actualWidth = width,
+                                actualHeight = height,
+                                executionTime = millis,
+                                ratio = ratio,
+                                resizeType = resizeType,
+                                total = totalImageResizeCount,
+                                skipLargerResize = skipLargerResize
+                            )
+                        }
+                    }
                 }
             }
         }

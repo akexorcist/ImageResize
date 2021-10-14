@@ -8,8 +8,10 @@ class TestResultDiffUtil(
     private val newItem: List<TestResult>
 ) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldItem.getOrNull(oldItemPosition)?.preferredSize ==
-                newItem.getOrNull(newItemPosition)?.preferredSize &&
+        return oldItem.getOrNull(oldItemPosition)?.preferredWidth ==
+                newItem.getOrNull(newItemPosition)?.preferredWidth &&
+        return oldItem.getOrNull(oldItemPosition)?.preferredHeight ==
+                newItem.getOrNull(newItemPosition)?.preferredHeight &&
                 oldItem.getOrNull(oldItemPosition)?.ratio ==
                 newItem.getOrNull(newItemPosition)?.ratio &&
                 oldItem.getOrNull(oldItemPosition)?.resizeType ==

@@ -1,11 +1,13 @@
 package com.akexorcist.imageresize.resize
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 
 class ImageResizer {
     fun resize(
-        preferredSize: Int,
+        preferredWidth: Int,
+        preferredHeight: Int,
         path: String,
         resizeType: ResizeType,
         skipLargerResize: Boolean = true,
@@ -13,33 +15,41 @@ class ImageResizer {
         return BitmapFactory.Options().run {
             inJustDecodeBounds = true
             BitmapFactory.decodeFile(path, this)
-            inSampleSize = calculateInSampleSize(this, preferredSize, preferredSize)
+            inSampleSize = calculateInSampleSize(this, preferredWidth, preferredHeight)
             inJustDecodeBounds = false
-            val expectSize = when (resizeType) {
-                ResizeType.Fill -> outWidth.coerceAtLeast(outHeight)
-                ResizeType.Crop -> outWidth.coerceAtMost(outHeight)
-            }
-            if (!skipLargerResize || expectSize > preferredSize) {
-                inDensity = expectSize
-                inTargetDensity = preferredSize * inSampleSize
+            if(!skipLargerResize || preferredWidth < outWidth && preferredHeight < outHeight) {
+                val outRatio = outWidth.toFloat() / outHeight.toFloat()
+                val reqRatio = preferredWidth.toFloat() / preferredHeight.toFloat()
+                when (resizeType) {
+                    ResizeType.Fill -> {
+                        if (outRatio > reqRatio) {
+                            inDensity = outWidth
+                            inTargetDensity = preferredWidth * inSampleSize
+                        } else if (outRatio <= reqRatio) {
+                            inDensity = outHeight
+                            inTargetDensity = preferredHeight * inSampleSize
+                        }
+                    }
+                    ResizeType.Crop -> {
+                        if (outRatio > reqRatio) {
+                            inDensity = outHeight
+                            inTargetDensity = preferredHeight * inSampleSize
+                        } else if (outRatio <= reqRatio) {
+                            inDensity = outWidth
+                            inTargetDensity = preferredWidth * inSampleSize
+                        }
+                    }
+                }
             }
             BitmapFactory.decodeFile(path, this)
         }
     }
 
-    fun getMaxImageSize(path: String): Int {
+    fun getOriginalImageSize(path: String): Pair<Int, Int> {
         return BitmapFactory.Options().run {
             inJustDecodeBounds = true
             BitmapFactory.decodeFile(path, this)
-            outWidth.coerceAtLeast(outHeight)
-        }
-    }
-
-    fun getMinImageSize(path: String): Int {
-        return BitmapFactory.Options().run {
-            inJustDecodeBounds = true
-            BitmapFactory.decodeFile(path, this)
-            outWidth.coerceAtMost(outHeight)
+            outWidth to outHeight
         }
     }
 

@@ -13,6 +13,6 @@
     <string name="resize_type_fill">Fill</string>
     <string name="resize_type_crop">Crop</string>
     <string name="result_title">%1$s %2$s</string>
-    <string name="result_preferred_size">%1$s PX</string>
+    <string name="result_preferred_size">Preferred %1$s x %2$s PX</string>
     <string name="image_resize_count">%1$d / %2$d</string>
 </resources>

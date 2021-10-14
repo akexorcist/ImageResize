@@ -6,7 +6,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TestResult(
-    val preferredSize: Int,
+    val preferredWidth: Int,
+    val preferredHeight: Int,
     val actualWidth: Int,
     val actualHeight: Int,
     val executionTime: Long,

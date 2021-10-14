@@ -23,7 +23,8 @@ class MainUiMapper {
 
     fun onImageResizeNext(
         uiModel: MainUiModel?,
-        preferredSize: Int,
+        preferredWidth: Int,
+        preferredHeight: Int,
         total: Int,
         ratio: ImageRatio,
         resizeType: ResizeType
@@ -32,7 +33,8 @@ class MainUiMapper {
         val addedResults = results.toMutableList().apply {
             add(
                 TestResult(
-                    preferredSize = preferredSize,
+                    preferredWidth = preferredWidth,
+                    preferredHeight = preferredHeight,
                     actualWidth = -1,
                     actualHeight = -1,
                     executionTime = -1,
@@ -51,8 +53,10 @@ class MainUiMapper {
 
     fun onImageResizeStatusUpdated(
         uiModel: MainUiModel?,
-        originalSize: Int,
-        preferredSize: Int,
+        originalWidth: Int,
+        originalHeight: Int,
+        preferredWidth: Int,
+        preferredHeight: Int,
         actualWidth: Int,
         actualHeight: Int,
         executionTime: Long,
@@ -62,22 +66,27 @@ class MainUiMapper {
         skipLargerResize: Boolean
     ): MainUiModel {
         val results = uiModel?.results ?: listOf()
-        val maxActualSize = actualWidth.coerceAtLeast(actualHeight)
-        val minActualSize = actualWidth.coerceAtMost(actualHeight)
-        val expectSize =
-            if(skipLargerResize) originalSize.coerceAtMost(preferredSize)
-            else preferredSize
         val state = when {
-            resizeType == ResizeType.Fill && maxActualSize == expectSize -> ResizeStatus.Pass
-            resizeType == ResizeType.Crop && minActualSize == expectSize -> ResizeStatus.Pass
+            resizeType == ResizeType.Fill &&
+                    (actualWidth == preferredWidth || actualHeight == preferredHeight) &&
+                    (actualWidth <= preferredWidth && actualHeight <= preferredHeight) ||
+                    (skipLargerResize && actualWidth == originalWidth && actualHeight == originalHeight) ->
+                ResizeStatus.Pass
+            resizeType == ResizeType.Crop &&
+                    (actualWidth == preferredWidth || actualHeight == preferredHeight) &&
+                    (actualWidth >= preferredWidth && actualHeight >= preferredHeight) ||
+                    (skipLargerResize && actualWidth == originalWidth && actualHeight == originalHeight) ->
+                ResizeStatus.Pass
             else -> ResizeStatus.Failed
         }
         val updatedResults = results.map {
-            if (preferredSize == it.preferredSize &&
+            if (preferredWidth == it.preferredWidth &&
+                preferredHeight == it.preferredHeight &&
                 ratio == it.ratio &&
                 resizeType == it.resizeType
             ) TestResult(
-                preferredSize = preferredSize,
+                preferredWidth = preferredWidth,
+                preferredHeight = preferredHeight,
                 actualWidth = actualWidth,
                 actualHeight = actualHeight,
                 executionTime = executionTime,
